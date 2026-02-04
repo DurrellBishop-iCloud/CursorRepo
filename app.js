@@ -355,7 +355,10 @@ window.addEventListener("load", () => {
     if (resizeObserver) resizeObserver.disconnect();
   };
 
-  startBtn.addEventListener("click", () => {
+  const startFromButton = (event) => {
+    if (event?.type === "touchend" || event?.type === "touchstart") {
+      event.preventDefault();
+    }
     applyPhrases(phrasesInput.value, true);
     wordIndex = 0;
     lastSentenceEnd = 0;
@@ -363,5 +366,11 @@ window.addEventListener("load", () => {
     cameraSection.classList.remove("hidden");
     statusSection.classList.remove("hidden");
     startCamera().catch(handleStartError);
+  };
+
+  startBtn.addEventListener("click", startFromButton);
+  startBtn.addEventListener("touchend", startFromButton, { passive: false });
+  startBtn.addEventListener("touchstart", (event) => event.preventDefault(), {
+    passive: false,
   });
 });
