@@ -32,25 +32,48 @@ body {
   background: rgba(20, 22, 30, 0.7);
 }
 
-.authoring h2 {
-  font-size: 14px;
-  font-weight: 600;
-  color: #e1e4ea;
+.authoring.full-screen {
+  position: relative;
+  flex: 1;
+  min-height: calc(100vh - 48px);
+  padding: 44px 16px 16px;
 }
 
 #phrasesInput {
   width: 100%;
-  min-height: 160px;
-  max-height: 40vh;
+  flex: 1;
+  min-height: 260px;
   overflow: auto;
-  resize: vertical;
-  padding: 12px 14px;
+  resize: none;
+  padding: 16px 18px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(8, 9, 12, 0.65);
   color: #f2f3f6;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.authoring-start {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  color: #b9c3ff;
+  border: 1px solid rgba(93, 124, 255, 0.5);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.authoring .version-title {
+  position: absolute;
+  top: 14px;
+  left: 12px;
+  font-size: 12px;
+  color: #9aa2b1;
+  letter-spacing: 0.02em;
 }
 
 button {

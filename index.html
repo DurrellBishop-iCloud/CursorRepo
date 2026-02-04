@@ -3,22 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mouth React Camera v1.2.2</title>
+    <title>Mouth React Camera v1.3.0</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app">
-      <header class="header">
-        <h1 class="version-title">v1.2.2</h1>
-      </header>
-
-      <section id="authoring" class="authoring">
-        <h2>Authoring</h2>
+      <section id="authoring" class="authoring full-screen">
+        <span class="version-title">v1.3.0</span>
+        <button id="startBtn" class="authoring-start" type="button">
+          Start Camera
+        </button>
         <textarea
           id="phrasesInput"
           placeholder="Type or paste text here. One word or phrase per line."
         ></textarea>
-        <button id="startBtn" type="button">Start Camera Mode</button>
       </section>
 
       <section id="cameraSection" class="camera-frame hidden">
