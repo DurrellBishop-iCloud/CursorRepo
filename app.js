@@ -374,5 +374,21 @@ window.addEventListener("load", () => {
     passive: false,
   });
 
+  cameraSection.addEventListener("click", () => {
+    authoringSection.classList.remove("hidden");
+    cameraSection.classList.add("hidden");
+    statusSection.classList.add("hidden");
+    hasStarted = false;
+    if (camera) camera.stop();
+  });
+  cameraSection.addEventListener("touchend", (event) => {
+    event.preventDefault();
+    authoringSection.classList.remove("hidden");
+    cameraSection.classList.add("hidden");
+    statusSection.classList.add("hidden");
+    hasStarted = false;
+    if (camera) camera.stop();
+  });
+
   window.__startFromButton = startFromButton;
 });
