@@ -153,7 +153,7 @@ function spawnText(xPx, yPx) {
   });
   Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.2);
 
-  setTimeout(() => removeTextBody(entry), 12000);
+  setTimeout(() => removeTextBody(entry), 7000);
 }
 
 async function startCamera() {

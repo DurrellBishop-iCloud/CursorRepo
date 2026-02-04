@@ -16,6 +16,7 @@ body {
 
 .app {
   width: min(900px, 100%);
+  min-height: calc(100vh - 48px);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -36,6 +37,8 @@ body {
 .camera-frame {
   position: relative;
   width: 100%;
+  flex: 1;
+  min-height: 70vh;
   aspect-ratio: 9 / 16;
   background: #1a1c25;
   overflow: hidden;
