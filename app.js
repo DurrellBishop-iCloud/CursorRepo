@@ -8,6 +8,8 @@ const startBtn = document.getElementById("startBtn");
 const authoringSection = document.getElementById("authoring");
 const cameraSection = document.getElementById("cameraSection");
 const statusSection = document.getElementById("statusSection");
+const fontSizeSlider = document.getElementById("fontSizeSlider");
+const fontColorPicker = document.getElementById("fontColorPicker");
 
 const { Engine, World, Bodies, Body, Runner } = Matter;
 
@@ -188,6 +190,8 @@ function spawnText(xPx, yPx) {
 
   const el = document.createElement("div");
   el.className = "fly-text";
+  el.style.fontSize = `${fontSizeSlider.value}px`;
+  el.style.color = fontColorPicker.value;
   const entry = getNextWord();
   if (!entry) return;
   el.textContent = entry.text;
