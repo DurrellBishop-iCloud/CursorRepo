@@ -9,6 +9,15 @@ const authoringSection = document.getElementById("authoring");
 const cameraSection = document.getElementById("cameraSection");
 const statusSection = document.getElementById("statusSection");
 const debugPanel = document.getElementById("debugPanel");
+const debugLabel = document.createElement("span");
+debugLabel.textContent = "Debig";
+debugLabel.style.fontWeight = "600";
+debugLabel.style.marginRight = "6px";
+debugLabel.style.color = `hsl(${Math.floor(Math.random() * 360)}, 80%, 70%)`;
+debugPanel.textContent = "";
+debugPanel.appendChild(debugLabel);
+const debugMessage = document.createElement("span");
+debugPanel.appendChild(debugMessage);
 
 const { Engine, World, Bodies, Body, Runner } = Matter;
 
@@ -48,7 +57,7 @@ function setStatus(text) {
 
 function debugLog(message) {
   const stamp = new Date().toLocaleTimeString();
-  debugPanel.textContent = `Debug: ${stamp} ${message}`;
+  debugMessage.textContent = ` ${stamp} ${message}`;
 }
 
 function parsePhrases(raw) {
