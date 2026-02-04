@@ -3,14 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mouth React Camera v1.1.1</title>
+    <title>Mouth React Camera v1.2.0</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app">
       <header class="header">
-        <h1 class="version-title">v1.1.1</h1>
+        <h1 class="version-title">v1.2.0</h1>
       </header>
+
+      <section class="authoring">
+        <div class="authoring-header">
+          <h2>Authoring</h2>
+          <span id="phraseCount" class="authoring-count">0 phrases</span>
+        </div>
+        <textarea
+          id="phrasesInput"
+          placeholder="Write one word or phrase per line"
+          rows="5"
+        ></textarea>
+        <div class="authoring-actions">
+          <button id="applyPhrasesBtn" type="button">Update phrases</button>
+          <span class="authoring-hint">Each line becomes a flying word.</span>
+        </div>
+      </section>
 
       <section class="camera-frame">
         <video id="video" autoplay playsinline muted></video>

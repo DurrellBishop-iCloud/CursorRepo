@@ -3,10 +3,13 @@ const overlay = document.getElementById("overlay");
 const textLayer = document.getElementById("text-layer");
 const startOverlay = document.getElementById("startOverlay");
 const statusLabel = document.getElementById("statusLabel");
+const phrasesInput = document.getElementById("phrasesInput");
+const applyPhrasesBtn = document.getElementById("applyPhrasesBtn");
+const phraseCount = document.getElementById("phraseCount");
 
 const { Engine, World, Bodies, Body, Runner } = Matter;
 
-const phrases = [
+const defaultPhrases = [
   "WOW!",
   "HELLO",
   "ZAP",
@@ -18,6 +21,7 @@ const phrases = [
   "HI",
   "BRB",
 ];
+let phrases = [...defaultPhrases];
 
 let lastSpawn = 0;
 let lastOpen = false;
@@ -32,6 +36,27 @@ let resizeObserver;
 
 function setStatus(text) {
   statusLabel.textContent = text;
+}
+
+function updatePhraseCount() {
+  const count = phrases.length;
+  phraseCount.textContent = `${count} phrase${count === 1 ? "" : "s"}`;
+}
+
+function parsePhrases(raw) {
+  return raw
+    .split(/\n|,/)
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+function applyPhrases(raw, shouldSave = true) {
+  const parsed = parsePhrases(raw);
+  phrases = parsed.length ? parsed : [...defaultPhrases];
+  updatePhraseCount();
+  if (shouldSave) {
+    localStorage.setItem("phrases", phrases.join("\n"));
+  }
 }
 
 function showOverlay(message) {
@@ -137,7 +162,8 @@ function spawnText(xPx, yPx) {
 
   const el = document.createElement("div");
   el.className = "fly-text";
-  el.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+  const list = phrases.length ? phrases : defaultPhrases;
+  el.textContent = list[Math.floor(Math.random() * list.length)];
   textLayer.appendChild(el);
 
   const rect = el.getBoundingClientRect();
@@ -233,6 +259,17 @@ async function startCamera() {
 }
 
 window.addEventListener("load", () => {
+  const saved = localStorage.getItem("phrases");
+  if (saved) {
+    phrasesInput.value = saved;
+  } else {
+    phrasesInput.value = defaultPhrases.join("\n");
+  }
+  applyPhrases(phrasesInput.value, false);
+  applyPhrasesBtn.addEventListener("click", () => {
+    applyPhrases(phrasesInput.value, true);
+  });
+
   const handleStartError = (err) => {
     console.error(err);
     const name = err?.name || "";
