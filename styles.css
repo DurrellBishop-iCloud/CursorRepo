@@ -36,9 +36,8 @@ body {
 .camera-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 9 / 16;
   background: #1a1c25;
-  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
 }
@@ -68,27 +67,6 @@ canvas {
   white-space: nowrap;
   transform-origin: center;
   will-change: transform;
-}
-
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-button {
-  background: #5d7cff;
-  color: #fff;
-  border: none;
-  padding: 12px 22px;
-  border-radius: 999px;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-button:disabled {
-  opacity: 0.6;
 }
 
 .status {

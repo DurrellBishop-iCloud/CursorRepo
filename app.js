@@ -1,7 +1,6 @@
 const video = document.getElementById("video");
 const overlay = document.getElementById("overlay");
 const textLayer = document.getElementById("text-layer");
-const startBtn = document.getElementById("startBtn");
 const statusLabel = document.getElementById("statusLabel");
 
 const { Engine, World, Bodies, Body, Runner } = Matter;
@@ -158,7 +157,6 @@ function spawnText(xPx, yPx) {
 }
 
 async function startCamera() {
-  startBtn.disabled = true;
   setStatus("Starting camera...");
 
   initPhysics();
@@ -214,11 +212,10 @@ async function startCamera() {
   setStatus("Running");
 }
 
-startBtn.addEventListener("click", () => {
+window.addEventListener("load", () => {
   startCamera().catch((err) => {
     console.error(err);
     setStatus("Camera error. Check permissions.");
-    startBtn.disabled = false;
     if (animationFrameId) cancelAnimationFrame(animationFrameId);
     if (runner && engine) Runner.stop(runner);
     if (resizeObserver) resizeObserver.disconnect();
