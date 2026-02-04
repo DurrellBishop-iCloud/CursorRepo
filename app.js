@@ -27,6 +27,7 @@ let phrases = [...defaultPhrases];
 let wordIndex = 0;
 let lastSentenceEnd = 0;
 const FULL_STOP_COOLDOWN_MS = 300;
+let hashWriteTimer;
 
 let lastSpawn = 0;
 let lastOpen = false;
@@ -68,6 +69,12 @@ function applyPhrases(raw, shouldSave = true) {
   lastSentenceEnd = 0;
   if (shouldSave) {
     localStorage.setItem("phrases", raw);
+    try {
+      const encoded = encodeURIComponent(raw);
+      window.location.hash = encoded ? `text=${encoded}` : "";
+    } catch (err) {
+      console.warn("Could not update URL hash", err);
+    }
   }
 }
 
@@ -293,14 +300,34 @@ async function startCamera() {
 }
 
 window.addEventListener("load", () => {
-  const saved = localStorage.getItem("phrases");
-  phrasesInput.value = saved ? saved : defaultPhrases.join("\n");
+  let initialText = "";
+  const hashMatch = window.location.hash.match(/^#text=(.*)$/);
+  if (hashMatch && hashMatch[1]) {
+    try {
+      initialText = decodeURIComponent(hashMatch[1]);
+    } catch (err) {
+      console.warn("Could not decode URL text", err);
+    }
+  }
+  if (!initialText) {
+    const saved = localStorage.getItem("phrases");
+    initialText = saved ? saved : defaultPhrases.join("\n");
+  }
+
+  phrasesInput.value = initialText;
   applyPhrases(phrasesInput.value, false);
   authoringSection.classList.remove("hidden");
   cameraSection.classList.add("hidden");
   statusSection.classList.add("hidden");
   hideOverlay();
   setStatus("Ready");
+
+  phrasesInput.addEventListener("input", () => {
+    clearTimeout(hashWriteTimer);
+    hashWriteTimer = setTimeout(() => {
+      applyPhrases(phrasesInput.value, true);
+    }, 400);
+  });
 
   const handleStartError = (err) => {
     console.error(err);
