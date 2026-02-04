@@ -3,27 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mouth React Camera v1.4.9 CC</title>
-    <link rel="stylesheet" href="styles.css?v=1.4.9" />
+    <title>Mouth React Camera v1.5.0 CC</title>
+    <link rel="stylesheet" href="styles.css?v=1.5.0" />
   </head>
   <body>
-    <div id="debugPanel" class="debug-panel" style="display:none;">Debug: ready</div>
     <main class="app">
       <section id="authoring" class="authoring full-screen">
         <div class="authoring-toolbar">
-          <span class="version-title">v1.4.9 CC</span>
+          <span class="version-title">v1.5.0 CC</span>
           <button
             id="startBtn"
             class="authoring-start"
             type="button"
             onclick="
               this.textContent='Starting...';
-              window.__debugInline && window.__debugInline('inline click');
               window.__startFromButton && window.__startFromButton(event);
             "
             ontouchend="
               this.textContent='Starting...';
-              window.__debugInline && window.__debugInline('inline touchend');
               window.__startFromButton && window.__startFromButton(event);
             "
           >
@@ -51,6 +48,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
-    <script src="app.js?v=1.4.9"></script>
+    <script src="app.js?v=1.5.0"></script>
   </body>
 </html>

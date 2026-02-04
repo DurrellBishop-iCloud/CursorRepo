@@ -8,17 +8,6 @@ const startBtn = document.getElementById("startBtn");
 const authoringSection = document.getElementById("authoring");
 const cameraSection = document.getElementById("cameraSection");
 const statusSection = document.getElementById("statusSection");
-const debugPanel = document.getElementById("debugPanel");
-const debugLabel = document.createElement("span");
-debugLabel.textContent = "Debug";
-debugLabel.style.fontWeight = "600";
-debugLabel.style.marginRight = "6px";
-debugLabel.style.color = `hsl(${Math.floor(Math.random() * 360)}, 80%, 70%)`;
-debugPanel.textContent = "";
-debugPanel.appendChild(debugLabel);
-const debugMessage = document.createElement("span");
-debugPanel.appendChild(debugMessage);
-const debugLines = [];
 
 const { Engine, World, Bodies, Body, Runner } = Matter;
 
@@ -54,13 +43,6 @@ let resizeObserver;
 
 function setStatus(text) {
   statusLabel.textContent = text;
-}
-
-function debugLog(message) {
-  const stamp = new Date().toLocaleTimeString();
-  debugLines.push(`${stamp} ${message}`);
-  if (debugLines.length > 6) debugLines.shift();
-  debugMessage.innerHTML = `<br>${debugLines.join("<br>")}`;
 }
 
 function parsePhrases(raw) {
@@ -241,7 +223,6 @@ function spawnText(xPx, yPx) {
 async function startCamera() {
   if (hasStarted) return;
   hasStarted = true;
-  debugLog("startCamera called");
   setStatus("Starting camera...");
 
   initPhysics();
@@ -314,7 +295,6 @@ async function startCamera() {
   });
 
   camera.start();
-  debugLog("camera.start invoked");
   setStatus("Running");
   hideOverlay();
 }
@@ -341,22 +321,6 @@ window.addEventListener("load", () => {
   statusSection.classList.add("hidden");
   hideOverlay();
   setStatus("Ready");
-  debugLog("ready v1.4.9 CC");
-
-  document.addEventListener(
-    "touchstart",
-    () => {
-      debugLog("touchstart detected");
-    },
-    { passive: true, capture: true }
-  );
-  document.addEventListener(
-    "click",
-    () => {
-      debugLog("click detected");
-    },
-    { capture: true }
-  );
 
   phrasesInput.addEventListener("input", () => {
     clearTimeout(hashWriteTimer);
@@ -367,20 +331,16 @@ window.addEventListener("load", () => {
 
   const handleStartError = (err) => {
     console.error(err);
-    debugLog(`start error: ${err?.name || "unknown"}`);
     const name = err?.name || "";
     if (name === "NotAllowedError" || name === "SecurityError") {
       setStatus("Tap to enable camera");
       showOverlay("Tap to enable camera");
-      debugLog("permission required");
       startOverlay.addEventListener(
         "click",
         () => {
           showOverlay("Starting camera...");
-          debugLog("overlay tapped");
           startCamera().catch((startErr) => {
             console.error(startErr);
-            debugLog(`start error: ${startErr?.name || "unknown"}`);
             setStatus("Camera error. Check permissions.");
           });
         },
@@ -399,7 +359,6 @@ window.addEventListener("load", () => {
     if (event?.type === "touchend" || event?.type === "touchstart") {
       event.preventDefault();
     }
-    debugLog(`start button ${event?.type || "click"}`);
     applyPhrases(phrasesInput.value, true);
     wordIndex = 0;
     lastSentenceEnd = 0;
@@ -416,5 +375,4 @@ window.addEventListener("load", () => {
   });
 
   window.__startFromButton = startFromButton;
-  window.__debugInline = (label) => debugLog(label);
 });

@@ -99,27 +99,6 @@ button {
   display: none;
 }
 
-.debug-panel {
-  position: sticky;
-  top: 0;
-  width: min(900px, 100%);
-  margin: 0 auto 16px;
-  background: rgba(8, 10, 14, 0.75);
-  color: #e2e6ef;
-  font-size: 11px;
-  padding: 16px 16px;
-  border-radius: 0 0 12px 12px;
-  z-index: 2;
-  pointer-events: none;
-  text-align: left;
-  white-space: normal;
-  overflow: auto;
-  text-overflow: initial;
-  min-height: 72px;
-  max-height: 140px;
-  line-height: 1.4;
-}
-
 .header h1 {
   font-size: 14px;
   margin-bottom: 6px;
