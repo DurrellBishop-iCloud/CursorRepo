@@ -338,18 +338,22 @@ window.addEventListener("load", () => {
   statusSection.classList.add("hidden");
   hideOverlay();
   setStatus("Ready");
-  debugLog("ready");
+  debugLog("ready v1.4.1");
 
   document.addEventListener(
     "touchstart",
     () => {
       debugLog("touchstart detected");
     },
-    { passive: true }
+    { passive: true, capture: true }
   );
-  document.addEventListener("click", () => {
-    debugLog("click detected");
-  });
+  document.addEventListener(
+    "click",
+    () => {
+      debugLog("click detected");
+    },
+    { capture: true }
+  );
 
   phrasesInput.addEventListener("input", () => {
     clearTimeout(hashWriteTimer);
@@ -407,4 +411,6 @@ window.addEventListener("load", () => {
   startBtn.addEventListener("touchstart", (event) => event.preventDefault(), {
     passive: false,
   });
+
+  window.__startFromButton = startFromButton;
 });

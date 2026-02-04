@@ -3,14 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mouth React Camera v1.4.0</title>
-    <link rel="stylesheet" href="styles.css?v=1.4.0" />
+    <title>Mouth React Camera v1.4.1</title>
+    <link rel="stylesheet" href="styles.css?v=1.4.1" />
   </head>
   <body>
     <main class="app">
       <section id="authoring" class="authoring full-screen">
-        <span class="version-title">v1.4.0</span>
-        <button id="startBtn" class="authoring-start" type="button">
+        <span class="version-title">v1.4.1</span>
+        <button
+          id="startBtn"
+          class="authoring-start"
+          type="button"
+          onclick="window.__startFromButton && window.__startFromButton(event)"
+          ontouchend="window.__startFromButton && window.__startFromButton(event)"
+        >
           Start Camera
         </button>
         <textarea
@@ -35,6 +41,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
-    <script src="app.js?v=1.4.0"></script>
+    <script src="app.js?v=1.4.1"></script>
   </body>
 </html>
