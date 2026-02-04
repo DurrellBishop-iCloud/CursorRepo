@@ -3,14 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mouth React Camera v1.4.4</title>
-    <link rel="stylesheet" href="styles.css?v=1.4.4" />
+    <title>Mouth React Camera v1.4.5</title>
+    <link rel="stylesheet" href="styles.css?v=1.4.5" />
   </head>
   <body>
+    <div id="debugPanel" class="debug-panel">Debug: ready</div>
     <main class="app">
       <section id="authoring" class="authoring full-screen">
         <div class="authoring-toolbar">
-          <span class="version-title">v1.4.4</span>
+          <span class="version-title">v1.4.5</span>
           <button
             id="startBtn"
             class="authoring-start"
@@ -48,11 +49,10 @@
         <span id="statusLabel">Starting...</span>
       </section>
     </main>
-    <div id="debugPanel" class="debug-panel">Debug: ready</div>
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
-    <script src="app.js?v=1.4.4"></script>
+    <script src="app.js?v=1.4.5"></script>
   </body>
 </html>
