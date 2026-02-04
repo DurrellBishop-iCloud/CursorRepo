@@ -99,16 +99,21 @@ button {
 
 .debug-panel {
   position: fixed;
-  left: 10px;
-  bottom: 10px;
-  max-width: calc(100vw - 20px);
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   background: rgba(8, 10, 14, 0.75);
   color: #e2e6ef;
   font-size: 11px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  z-index: 5;
+  padding: 8px 12px;
+  border-radius: 0 0 8px 8px;
+  z-index: 999;
   pointer-events: none;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header h1 {
