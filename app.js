@@ -4,8 +4,10 @@ const textLayer = document.getElementById("text-layer");
 const startOverlay = document.getElementById("startOverlay");
 const statusLabel = document.getElementById("statusLabel");
 const phrasesInput = document.getElementById("phrasesInput");
-const applyPhrasesBtn = document.getElementById("applyPhrasesBtn");
-const phraseCount = document.getElementById("phraseCount");
+const startBtn = document.getElementById("startBtn");
+const authoringSection = document.getElementById("authoring");
+const cameraSection = document.getElementById("cameraSection");
+const statusSection = document.getElementById("statusSection");
 
 const { Engine, World, Bodies, Body, Runner } = Matter;
 
@@ -38,11 +40,6 @@ function setStatus(text) {
   statusLabel.textContent = text;
 }
 
-function updatePhraseCount() {
-  const count = phrases.length;
-  phraseCount.textContent = `${count} phrase${count === 1 ? "" : "s"}`;
-}
-
 function parsePhrases(raw) {
   return raw
     .split(/\n|,/)
@@ -53,7 +50,6 @@ function parsePhrases(raw) {
 function applyPhrases(raw, shouldSave = true) {
   const parsed = parsePhrases(raw);
   phrases = parsed.length ? parsed : [...defaultPhrases];
-  updatePhraseCount();
   if (shouldSave) {
     localStorage.setItem("phrases", phrases.join("\n"));
   }
@@ -260,15 +256,8 @@ async function startCamera() {
 
 window.addEventListener("load", () => {
   const saved = localStorage.getItem("phrases");
-  if (saved) {
-    phrasesInput.value = saved;
-  } else {
-    phrasesInput.value = defaultPhrases.join("\n");
-  }
+  phrasesInput.value = saved ? saved : defaultPhrases.join("\n");
   applyPhrases(phrasesInput.value, false);
-  applyPhrasesBtn.addEventListener("click", () => {
-    applyPhrases(phrasesInput.value, true);
-  });
 
   const handleStartError = (err) => {
     console.error(err);
@@ -296,5 +285,11 @@ window.addEventListener("load", () => {
     if (resizeObserver) resizeObserver.disconnect();
   };
 
-  startCamera().catch(handleStartError);
+  startBtn.addEventListener("click", () => {
+    applyPhrases(phrasesInput.value, true);
+    authoringSection.classList.add("hidden");
+    cameraSection.classList.remove("hidden");
+    statusSection.classList.remove("hidden");
+    startCamera().catch(handleStartError);
+  });
 });
