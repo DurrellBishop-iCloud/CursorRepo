@@ -29,6 +29,7 @@ let lastSpawn = 0;
 let lastOpen = false;
 let openStart = 0;
 let camera;
+let hasStarted = false;
 let engine;
 let runner;
 let walls = [];
@@ -190,6 +191,8 @@ function spawnText(xPx, yPx) {
 }
 
 async function startCamera() {
+  if (hasStarted) return;
+  hasStarted = true;
   setStatus("Starting camera...");
 
   initPhysics();
@@ -258,6 +261,11 @@ window.addEventListener("load", () => {
   const saved = localStorage.getItem("phrases");
   phrasesInput.value = saved ? saved : defaultPhrases.join("\n");
   applyPhrases(phrasesInput.value, false);
+  authoringSection.classList.remove("hidden");
+  cameraSection.classList.add("hidden");
+  statusSection.classList.add("hidden");
+  hideOverlay();
+  setStatus("Ready");
 
   const handleStartError = (err) => {
     console.error(err);
