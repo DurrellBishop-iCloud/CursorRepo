@@ -93,6 +93,20 @@ button {
   display: none;
 }
 
+.debug-panel {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  max-width: calc(100vw - 20px);
+  background: rgba(8, 10, 14, 0.75);
+  color: #e2e6ef;
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  z-index: 5;
+  pointer-events: none;
+}
+
 .header h1 {
   font-size: 14px;
   margin-bottom: 6px;

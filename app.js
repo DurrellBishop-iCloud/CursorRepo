@@ -8,6 +8,7 @@ const startBtn = document.getElementById("startBtn");
 const authoringSection = document.getElementById("authoring");
 const cameraSection = document.getElementById("cameraSection");
 const statusSection = document.getElementById("statusSection");
+const debugPanel = document.getElementById("debugPanel");
 
 const { Engine, World, Bodies, Body, Runner } = Matter;
 
@@ -43,6 +44,11 @@ let resizeObserver;
 
 function setStatus(text) {
   statusLabel.textContent = text;
+}
+
+function debugLog(message) {
+  const stamp = new Date().toLocaleTimeString();
+  debugPanel.textContent = `Debug: ${stamp} ${message}`;
 }
 
 function parsePhrases(raw) {
@@ -223,6 +229,7 @@ function spawnText(xPx, yPx) {
 async function startCamera() {
   if (hasStarted) return;
   hasStarted = true;
+  debugLog("startCamera called");
   setStatus("Starting camera...");
 
   initPhysics();
@@ -295,6 +302,7 @@ async function startCamera() {
   });
 
   camera.start();
+  debugLog("camera.start invoked");
   setStatus("Running");
   hideOverlay();
 }
@@ -321,6 +329,7 @@ window.addEventListener("load", () => {
   statusSection.classList.add("hidden");
   hideOverlay();
   setStatus("Ready");
+  debugLog("ready");
 
   phrasesInput.addEventListener("input", () => {
     clearTimeout(hashWriteTimer);
@@ -331,16 +340,20 @@ window.addEventListener("load", () => {
 
   const handleStartError = (err) => {
     console.error(err);
+    debugLog(`start error: ${err?.name || "unknown"}`);
     const name = err?.name || "";
     if (name === "NotAllowedError" || name === "SecurityError") {
       setStatus("Tap to enable camera");
       showOverlay("Tap to enable camera");
+      debugLog("permission required");
       startOverlay.addEventListener(
         "click",
         () => {
           showOverlay("Starting camera...");
+          debugLog("overlay tapped");
           startCamera().catch((startErr) => {
             console.error(startErr);
+            debugLog(`start error: ${startErr?.name || "unknown"}`);
             setStatus("Camera error. Check permissions.");
           });
         },
@@ -359,6 +372,7 @@ window.addEventListener("load", () => {
     if (event?.type === "touchend" || event?.type === "touchstart") {
       event.preventDefault();
     }
+    debugLog(`start button ${event?.type || "click"}`);
     applyPhrases(phrasesInput.value, true);
     wordIndex = 0;
     lastSentenceEnd = 0;
