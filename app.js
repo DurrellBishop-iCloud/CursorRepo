@@ -18,6 +18,7 @@ debugPanel.textContent = "";
 debugPanel.appendChild(debugLabel);
 const debugMessage = document.createElement("span");
 debugPanel.appendChild(debugMessage);
+const debugLines = [];
 
 const { Engine, World, Bodies, Body, Runner } = Matter;
 
@@ -57,7 +58,9 @@ function setStatus(text) {
 
 function debugLog(message) {
   const stamp = new Date().toLocaleTimeString();
-  debugMessage.textContent = ` ${stamp} ${message}`;
+  debugLines.push(`${stamp} ${message}`);
+  if (debugLines.length > 6) debugLines.shift();
+  debugMessage.innerHTML = `<br>${debugLines.join("<br>")}`;
 }
 
 function parsePhrases(raw) {
@@ -338,7 +341,7 @@ window.addEventListener("load", () => {
   statusSection.classList.add("hidden");
   hideOverlay();
   setStatus("Ready");
-  debugLog("ready v1.4.2");
+  debugLog("ready v1.4.6");
 
   document.addEventListener(
     "touchstart",
@@ -413,4 +416,5 @@ window.addEventListener("load", () => {
   });
 
   window.__startFromButton = startFromButton;
+  window.__debugInline = (label) => debugLog(label);
 });

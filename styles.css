@@ -112,10 +112,11 @@ button {
   z-index: 2;
   pointer-events: none;
   text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-height: 44px;
+  white-space: normal;
+  overflow: auto;
+  text-overflow: initial;
+  min-height: 72px;
+  max-height: 140px;
   line-height: 1.4;
 }
 
