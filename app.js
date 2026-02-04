@@ -190,7 +190,7 @@ async function startCamera() {
     const isOpen = ratio > 0.06;
     const now = Date.now();
 
-    if (isOpen && !lastOpen && now - lastSpawn > 650) {
+    if (isOpen && now - lastSpawn > 220) {
       const mouth = landmarks[13];
       const { width, height } = getLayerSize();
       spawnText(mouth.x * width, mouth.y * height);
