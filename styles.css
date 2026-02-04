@@ -11,7 +11,7 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  padding: 56px 24px 24px;
+  padding: 92px 24px 24px;
 }
 
 .app {
@@ -44,7 +44,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 #phrasesInput {
@@ -108,14 +108,16 @@ button {
   background: rgba(8, 10, 14, 0.75);
   color: #e2e6ef;
   font-size: 11px;
-  padding: 8px 12px;
-  border-radius: 0 0 8px 8px;
+  padding: 16px 16px;
+  border-radius: 0 0 12px 12px;
   z-index: 999;
   pointer-events: none;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-height: 44px;
+  line-height: 1.4;
 }
 
 .header h1 {
