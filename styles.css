@@ -22,8 +22,10 @@ body {
 }
 
 .header h1 {
-  font-size: 28px;
+  font-size: 14px;
   margin-bottom: 6px;
+  font-weight: 600;
+  color: #b4bac4;
 }
 
 .header p {
@@ -93,3 +95,4 @@ button:disabled {
   font-size: 14px;
   color: #b4bac4;
 }
+
