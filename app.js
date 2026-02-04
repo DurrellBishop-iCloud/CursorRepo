@@ -227,7 +227,7 @@ async function startCamera() {
       const mouth = landmarks[13];
       const { width, height } = getLayerSize();
       spawnText(mouth.x * width, mouth.y * height);
-    } else if (isOpen && now - openStart > 300 && now - lastSpawn > 60) {
+    } else if (isOpen && now - openStart > 300 && now - lastSpawn > 200) {
       const mouth = landmarks[13];
       const { width, height } = getLayerSize();
       spawnText(mouth.x * width, mouth.y * height);
