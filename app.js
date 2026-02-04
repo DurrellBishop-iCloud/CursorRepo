@@ -4,6 +4,8 @@ const textLayer = document.getElementById("text-layer");
 const startBtn = document.getElementById("startBtn");
 const statusLabel = document.getElementById("statusLabel");
 
+const { Engine, World, Bodies, Body, Runner } = Matter;
+
 const phrases = [
   "WOW!",
   "HELLO",
@@ -20,19 +22,15 @@ const phrases = [
 let lastSpawn = 0;
 let lastOpen = false;
 let camera;
+let engine;
+let runner;
+let walls = [];
+let textBodies = [];
+let animationFrameId;
+let resizeObserver;
 
 function setStatus(text) {
   statusLabel.textContent = text;
-}
-
-function spawnText(xPct, yPct) {
-  const el = document.createElement("div");
-  el.className = "fly-text";
-  el.textContent = phrases[Math.floor(Math.random() * phrases.length)];
-  el.style.left = `${xPct}%`;
-  el.style.top = `${yPct}%`;
-  textLayer.appendChild(el);
-  el.addEventListener("animationend", () => el.remove());
 }
 
 function distance(a, b) {
@@ -51,12 +49,119 @@ function mouthOpenRatio(landmarks) {
   return vertical / horizontal;
 }
 
+function getLayerSize() {
+  const rect = textLayer.getBoundingClientRect();
+  return { width: rect.width, height: rect.height };
+}
+
+function createWalls(width, height) {
+  const thickness = 80;
+  const options = { isStatic: true, restitution: 0.9, friction: 0.1 };
+  const newWalls = [
+    Bodies.rectangle(width / 2, -thickness / 2, width, thickness, options),
+    Bodies.rectangle(
+      width / 2,
+      height + thickness / 2,
+      width,
+      thickness,
+      options
+    ),
+    Bodies.rectangle(-thickness / 2, height / 2, thickness, height, options),
+    Bodies.rectangle(
+      width + thickness / 2,
+      height / 2,
+      thickness,
+      height,
+      options
+    ),
+  ];
+
+  if (walls.length) {
+    World.remove(engine.world, walls);
+  }
+
+  walls = newWalls;
+  World.add(engine.world, walls);
+}
+
+function updateCanvasSize() {
+  const { width, height } = getLayerSize();
+  overlay.width = width;
+  overlay.height = height;
+  if (engine) {
+    createWalls(width, height);
+  }
+}
+
+function initPhysics() {
+  if (engine) return;
+  engine = Engine.create();
+  engine.gravity.y = 0.7;
+
+  runner = Runner.create();
+  Runner.run(runner, engine);
+
+  updateCanvasSize();
+
+  resizeObserver = new ResizeObserver(updateCanvasSize);
+  resizeObserver.observe(textLayer);
+
+  const step = () => {
+    textBodies.forEach(({ body, el }) => {
+      el.style.transform = `translate(${body.position.x}px, ${body.position.y}px) translate(-50%, -50%) rotate(${body.angle}rad)`;
+    });
+    animationFrameId = requestAnimationFrame(step);
+  };
+  step();
+}
+
+function removeTextBody(entry) {
+  if (!entry) return;
+  World.remove(engine.world, entry.body);
+  entry.el.remove();
+  textBodies = textBodies.filter((item) => item !== entry);
+}
+
+function spawnText(xPx, yPx) {
+  if (!engine) return;
+
+  const el = document.createElement("div");
+  el.className = "fly-text";
+  el.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+  textLayer.appendChild(el);
+
+  const rect = el.getBoundingClientRect();
+  const body = Bodies.rectangle(
+    xPx,
+    yPx,
+    rect.width + 16,
+    rect.height + 12,
+    {
+      restitution: 0.9,
+      friction: 0.05,
+      frictionAir: 0.01,
+      density: 0.001,
+    }
+  );
+
+  const entry = { body, el };
+  textBodies.push(entry);
+  World.add(engine.world, body);
+
+  Body.setVelocity(body, {
+    x: (Math.random() - 0.5) * 8,
+    y: -6 - Math.random() * 4,
+  });
+  Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.2);
+
+  setTimeout(() => removeTextBody(entry), 12000);
+}
+
 async function startCamera() {
   startBtn.disabled = true;
   setStatus("Starting camera...");
 
-  overlay.width = video.clientWidth;
-  overlay.height = video.clientHeight;
+  initPhysics();
 
   const faceMesh = new FaceMesh({
     locateFile: (file) =>
@@ -87,7 +192,8 @@ async function startCamera() {
 
     if (isOpen && !lastOpen && now - lastSpawn > 650) {
       const mouth = landmarks[13];
-      spawnText(mouth.x * 100, mouth.y * 100);
+      const { width, height } = getLayerSize();
+      spawnText(mouth.x * width, mouth.y * height);
       lastSpawn = now;
     }
 
@@ -113,5 +219,8 @@ startBtn.addEventListener("click", () => {
     console.error(err);
     setStatus("Camera error. Check permissions.");
     startBtn.disabled = false;
+    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    if (runner && engine) Runner.stop(runner);
+    if (resizeObserver) resizeObserver.disconnect();
   });
 });
