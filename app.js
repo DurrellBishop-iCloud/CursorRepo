@@ -24,6 +24,9 @@ const defaultPhrases = [
   "BRB",
 ];
 let phrases = [...defaultPhrases];
+let wordIndex = 0;
+let lastSentenceEnd = 0;
+const FULL_STOP_COOLDOWN_MS = 300;
 
 let lastSpawn = 0;
 let lastOpen = false;
@@ -43,16 +46,28 @@ function setStatus(text) {
 
 function parsePhrases(raw) {
   return raw
-    .split(/\n|,/)
+    .split(/\s+/)
     .map((value) => value.trim())
     .filter(Boolean);
 }
 
 function applyPhrases(raw, shouldSave = true) {
   const parsed = parsePhrases(raw);
-  phrases = parsed.length ? parsed : [...defaultPhrases];
+  const words = [];
+  parsed.forEach((token) => {
+    const endsSentence = /[.!?]+$/.test(token);
+    const cleaned = token.replace(/^[^\w']+|[^\w']+$/g, "");
+    if (!cleaned) return;
+    words.push({ text: cleaned, endsSentence });
+  });
+  phrases = words.length ? words : defaultPhrases.map((text) => ({
+    text,
+    endsSentence: /[.!?]+$/.test(text),
+  }));
+  wordIndex = 0;
+  lastSentenceEnd = 0;
   if (shouldSave) {
-    localStorage.setItem("phrases", phrases.join("\n"));
+    localStorage.setItem("phrases", raw);
   }
 }
 
@@ -154,13 +169,21 @@ function removeTextBody(entry) {
   textBodies = textBodies.filter((item) => item !== entry);
 }
 
+function getNextWord() {
+  if (!phrases.length) return null;
+  const entry = phrases[wordIndex % phrases.length];
+  wordIndex += 1;
+  return entry;
+}
+
 function spawnText(xPx, yPx) {
   if (!engine) return;
 
   const el = document.createElement("div");
   el.className = "fly-text";
-  const list = phrases.length ? phrases : defaultPhrases;
-  el.textContent = list[Math.floor(Math.random() * list.length)];
+  const entry = getNextWord();
+  if (!entry) return;
+  el.textContent = entry.text;
   textLayer.appendChild(el);
 
   const rect = el.getBoundingClientRect();
@@ -225,16 +248,28 @@ async function startCamera() {
     const now = Date.now();
 
     if (isOpen && !lastOpen) {
+      if (lastSentenceEnd && now - lastSentenceEnd < FULL_STOP_COOLDOWN_MS) {
+        lastOpen = isOpen;
+        return;
+      }
       openStart = now;
       lastSpawn = now;
       const mouth = landmarks[13];
       const { width, height } = getLayerSize();
       spawnText(mouth.x * width, mouth.y * height);
+      const previous = phrases[(wordIndex - 1 + phrases.length) % phrases.length];
+      if (previous?.endsSentence) {
+        lastSentenceEnd = now;
+      }
     } else if (isOpen && now - openStart > 300 && now - lastSpawn > 200) {
       const mouth = landmarks[13];
       const { width, height } = getLayerSize();
       spawnText(mouth.x * width, mouth.y * height);
       lastSpawn = now;
+      const previous = phrases[(wordIndex - 1 + phrases.length) % phrases.length];
+      if (previous?.endsSentence) {
+        lastSentenceEnd = now;
+      }
     } else if (!isOpen && lastOpen) {
       openStart = 0;
     }
@@ -295,6 +330,8 @@ window.addEventListener("load", () => {
 
   startBtn.addEventListener("click", () => {
     applyPhrases(phrasesInput.value, true);
+    wordIndex = 0;
+    lastSentenceEnd = 0;
     authoringSection.classList.add("hidden");
     cameraSection.classList.remove("hidden");
     statusSection.classList.remove("hidden");
