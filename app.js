@@ -21,6 +21,7 @@ const phrases = [
 
 let lastSpawn = 0;
 let lastOpen = false;
+let openStart = 0;
 let camera;
 let engine;
 let runner;
@@ -198,11 +199,19 @@ async function startCamera() {
     const isOpen = ratio > 0.06;
     const now = Date.now();
 
-    if (isOpen && now - lastSpawn > 60) {
+    if (isOpen && !lastOpen) {
+      openStart = now;
+      lastSpawn = now;
+      const mouth = landmarks[13];
+      const { width, height } = getLayerSize();
+      spawnText(mouth.x * width, mouth.y * height);
+    } else if (isOpen && now - openStart > 300 && now - lastSpawn > 60) {
       const mouth = landmarks[13];
       const { width, height } = getLayerSize();
       spawnText(mouth.x * width, mouth.y * height);
       lastSpawn = now;
+    } else if (!isOpen && lastOpen) {
+      openStart = 0;
     }
 
     lastOpen = isOpen;
