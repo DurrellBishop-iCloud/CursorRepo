@@ -10,7 +10,7 @@ const cameraSection = document.getElementById("cameraSection");
 const statusSection = document.getElementById("statusSection");
 const debugPanel = document.getElementById("debugPanel");
 const debugLabel = document.createElement("span");
-debugLabel.textContent = "Debig";
+debugLabel.textContent = "Debug";
 debugLabel.style.fontWeight = "600";
 debugLabel.style.marginRight = "6px";
 debugLabel.style.color = `hsl(${Math.floor(Math.random() * 360)}, 80%, 70%)`;
@@ -225,8 +225,8 @@ function spawnText(xPx, yPx) {
     }
   );
 
-  const entry = { body, el };
-  textBodies.push(entry);
+  const textEntry = { body, el };
+  textBodies.push(textEntry);
   World.add(engine.world, body);
 
   Body.setVelocity(body, {
@@ -235,7 +235,7 @@ function spawnText(xPx, yPx) {
   });
   Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.2);
 
-  setTimeout(() => removeTextBody(entry), 7000);
+  setTimeout(() => removeTextBody(textEntry), 7000);
 }
 
 async function startCamera() {
@@ -341,7 +341,7 @@ window.addEventListener("load", () => {
   statusSection.classList.add("hidden");
   hideOverlay();
   setStatus("Ready");
-  debugLog("ready v1.4.6");
+  debugLog("ready v1.4.7");
 
   document.addEventListener(
     "touchstart",
