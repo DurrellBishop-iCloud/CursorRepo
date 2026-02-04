@@ -338,7 +338,7 @@ window.addEventListener("load", () => {
   statusSection.classList.add("hidden");
   hideOverlay();
   setStatus("Ready");
-  debugLog("ready v1.4.1");
+  debugLog("ready v1.4.2");
 
   document.addEventListener(
     "touchstart",
