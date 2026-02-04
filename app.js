@@ -9,6 +9,7 @@ const authoringSection = document.getElementById("authoring");
 const cameraSection = document.getElementById("cameraSection");
 const statusSection = document.getElementById("statusSection");
 const debugPanel = document.getElementById("debugPanel");
+debugPanel.style.display = "none"; // Debug panel disabled
 const debugLabel = document.createElement("span");
 debugLabel.textContent = "Debug";
 debugLabel.style.fontWeight = "600";
@@ -341,7 +342,7 @@ window.addEventListener("load", () => {
   statusSection.classList.add("hidden");
   hideOverlay();
   setStatus("Ready");
-  debugLog("ready v1.4.7 CC");
+  debugLog("ready v1.4.8 CC");
 
   document.addEventListener(
     "touchstart",
