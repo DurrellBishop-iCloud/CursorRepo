@@ -70,6 +70,10 @@ body {
   pointer-events: auto;
 }
 
+.authoring-start:active {
+  transform: scale(0.98);
+}
+
 .authoring .version-title {
   position: absolute;
   top: 14px;

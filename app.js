@@ -331,6 +331,17 @@ window.addEventListener("load", () => {
   setStatus("Ready");
   debugLog("ready");
 
+  document.addEventListener(
+    "touchstart",
+    () => {
+      debugLog("touchstart detected");
+    },
+    { passive: true }
+  );
+  document.addEventListener("click", () => {
+    debugLog("click detected");
+  });
+
   phrasesInput.addEventListener("input", () => {
     clearTimeout(hashWriteTimer);
     hashWriteTimer = setTimeout(() => {
