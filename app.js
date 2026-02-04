@@ -1,6 +1,7 @@
 const video = document.getElementById("video");
 const overlay = document.getElementById("overlay");
 const textLayer = document.getElementById("text-layer");
+const startOverlay = document.getElementById("startOverlay");
 const statusLabel = document.getElementById("statusLabel");
 
 const { Engine, World, Bodies, Body, Runner } = Matter;
@@ -30,6 +31,15 @@ let resizeObserver;
 
 function setStatus(text) {
   statusLabel.textContent = text;
+}
+
+function showOverlay(message) {
+  if (message) startOverlay.textContent = message;
+  startOverlay.classList.remove("hidden");
+}
+
+function hideOverlay() {
+  startOverlay.classList.add("hidden");
 }
 
 function distance(a, b) {
@@ -210,14 +220,35 @@ async function startCamera() {
 
   camera.start();
   setStatus("Running");
+  hideOverlay();
 }
 
 window.addEventListener("load", () => {
-  startCamera().catch((err) => {
+  const handleStartError = (err) => {
     console.error(err);
+    const name = err?.name || "";
+    if (name === "NotAllowedError" || name === "SecurityError") {
+      setStatus("Tap to enable camera");
+      showOverlay("Tap to enable camera");
+      startOverlay.addEventListener(
+        "click",
+        () => {
+          showOverlay("Starting camera...");
+          startCamera().catch((startErr) => {
+            console.error(startErr);
+            setStatus("Camera error. Check permissions.");
+          });
+        },
+        { once: true }
+      );
+      return;
+    }
+
     setStatus("Camera error. Check permissions.");
     if (animationFrameId) cancelAnimationFrame(animationFrameId);
     if (runner && engine) Runner.stop(runner);
     if (resizeObserver) resizeObserver.disconnect();
-  });
+  };
+
+  startCamera().catch(handleStartError);
 });

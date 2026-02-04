@@ -3,19 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mouth React Camera v1.0.8</title>
+    <title>Mouth React Camera v1.0.9</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app">
       <header class="header">
-        <h1 class="version-title">v1.0.8</h1>
+        <h1 class="version-title">v1.0.9</h1>
       </header>
 
       <section class="camera-frame">
         <video id="video" autoplay playsinline muted></video>
         <canvas id="overlay"></canvas>
         <div id="text-layer" class="text-layer"></div>
+        <div id="startOverlay" class="start-overlay hidden">Tap to enable camera</div>
       </section>
 
       <section class="status">
