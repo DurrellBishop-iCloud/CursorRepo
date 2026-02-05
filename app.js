@@ -52,6 +52,10 @@ let hashWriteTimer;
 let currentFontSize = 36;
 let autoMode = false;
 
+// Stream mode: track trajectory for continuous mouth open
+let streamVelocity = null;
+let streamAngle = null;
+
 let lastSpawn = 0;
 let lastOpen = false;
 let openStart = 0;
@@ -265,7 +269,7 @@ function getNextWord() {
   return entry;
 }
 
-function spawnText(xPx, yPx) {
+function spawnText(xPx, yPx, useStream = false) {
   if (!engine) return;
 
   const entry = getNextWord();
@@ -296,11 +300,32 @@ function spawnText(xPx, yPx) {
   textBodies.push(textEntry);
   World.add(engine.world, body);
 
-  Body.setVelocity(body, {
-    x: (Math.random() - 0.5) * 8,
-    y: -6 - Math.random() * 4,
-  });
-  Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.2);
+  let vx, vy;
+  
+  if (useStream && streamVelocity) {
+    // Stream mode: use same velocity as first word
+    vx = streamVelocity.x;
+    vy = streamVelocity.y;
+  } else {
+    // First word: shoot toward top-left
+    // Random angle between 200-250 degrees (top-left quadrant)
+    const angleDeg = 200 + Math.random() * 50;
+    const angleRad = angleDeg * Math.PI / 180;
+    const speed = 8 + Math.random() * 4;
+    vx = Math.cos(angleRad) * speed;
+    vy = Math.sin(angleRad) * speed;
+    
+    // Store for stream mode
+    streamVelocity = { x: vx, y: vy };
+    // Calculate angle for text rotation (first letter leads)
+    streamAngle = Math.atan2(vy, vx);
+  }
+
+  Body.setVelocity(body, { x: vx, y: vy });
+  
+  // Rotate text so first letter leads the direction
+  Body.setAngle(body, streamAngle);
+  Body.setAngularVelocity(body, 0); // No spin, keep aligned
 
   setTimeout(() => removeTextBody(textEntry), 7000);
 }
@@ -340,30 +365,37 @@ async function startCamera() {
     const now = Date.now();
 
     if (isOpen && !lastOpen) {
+      // Mouth just opened - reset stream and spawn first word
       if (lastSentenceEnd && now - lastSentenceEnd < FULL_STOP_COOLDOWN_MS) {
         lastOpen = isOpen;
         return;
       }
+      streamVelocity = null;
+      streamAngle = null;
       openStart = now;
       lastSpawn = now;
       const mouth = landmarks[13];
       const { width, height } = getLayerSize();
-      spawnText(mouth.x * width, mouth.y * height);
+      spawnText(mouth.x * width, mouth.y * height, false);
       const previous = phrases[(wordIndex - 1 + phrases.length) % phrases.length];
       if (previous?.endsSentence) {
         lastSentenceEnd = now;
       }
     } else if (isOpen && now - openStart > 300 && now - lastSpawn > 200) {
+      // Mouth still open - stream mode, same trajectory
       const mouth = landmarks[13];
       const { width, height } = getLayerSize();
-      spawnText(mouth.x * width, mouth.y * height);
+      spawnText(mouth.x * width, mouth.y * height, true);
       lastSpawn = now;
       const previous = phrases[(wordIndex - 1 + phrases.length) % phrases.length];
       if (previous?.endsSentence) {
         lastSentenceEnd = now;
       }
     } else if (!isOpen && lastOpen) {
+      // Mouth closed - reset stream
       openStart = 0;
+      streamVelocity = null;
+      streamAngle = null;
     }
 
     lastOpen = isOpen;
