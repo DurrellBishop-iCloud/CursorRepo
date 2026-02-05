@@ -29,6 +29,8 @@ const sentenceColors = [
   "#CAFFBF", // light mint
 ];
 
+let shuffledColors = [...sentenceColors];
+
 const defaultPhrases = [
   "Write",
   "your",
@@ -63,6 +65,16 @@ let resizeObserver;
 
 function setStatus(text) {
   statusLabel.textContent = text;
+}
+
+// Shuffle array randomly
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 function parseFormattedPhrases() {
@@ -118,7 +130,7 @@ function autoColorSentences() {
   let html = "";
   sentences.forEach((sentence, i) => {
     if (!sentence.trim()) return;
-    const color = sentenceColors[colorIndex % sentenceColors.length];
+    const color = shuffledColors[colorIndex % shuffledColors.length];
     html += `<span style="color: ${color}; font-size: ${currentFontSize}px">${sentence}</span>`;
     // Only increment color if sentence ends with punctuation
     if (/[.!?]$/.test(sentence.trim())) {
@@ -376,41 +388,67 @@ window.addEventListener("load", () => {
 
   // Size up button
   sizeUpBtn.addEventListener("click", () => {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0 && !selection.isCollapsed) {
+    if (autoMode) {
+      // In auto mode, resize all text
       currentFontSize = Math.min(currentFontSize + 4, 80);
-      document.execCommand("fontSize", false, "7");
-      const fontElements = phrasesInput.querySelectorAll('font[size="7"]');
-      fontElements.forEach(el => {
-        el.removeAttribute("size");
-        el.style.fontSize = `${currentFontSize}px`;
-      });
+      autoColorSentences();
     } else {
-      currentFontSize = Math.min(currentFontSize + 4, 80);
+      // Manual mode - resize selected text
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0 && !selection.isCollapsed) {
+        currentFontSize = Math.min(currentFontSize + 4, 80);
+        document.execCommand("fontSize", false, "7");
+        const fontElements = phrasesInput.querySelectorAll('font[size="7"]');
+        fontElements.forEach(el => {
+          el.removeAttribute("size");
+          el.style.fontSize = `${currentFontSize}px`;
+        });
+      } else {
+        currentFontSize = Math.min(currentFontSize + 4, 80);
+      }
     }
   });
 
   // Size down button
   sizeDownBtn.addEventListener("click", () => {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0 && !selection.isCollapsed) {
+    if (autoMode) {
+      // In auto mode, resize all text
       currentFontSize = Math.max(currentFontSize - 4, 16);
-      document.execCommand("fontSize", false, "7");
-      const fontElements = phrasesInput.querySelectorAll('font[size="7"]');
-      fontElements.forEach(el => {
-        el.removeAttribute("size");
-        el.style.fontSize = `${currentFontSize}px`;
-      });
+      autoColorSentences();
     } else {
-      currentFontSize = Math.max(currentFontSize - 4, 16);
+      // Manual mode - resize selected text
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0 && !selection.isCollapsed) {
+        currentFontSize = Math.max(currentFontSize - 4, 16);
+        document.execCommand("fontSize", false, "7");
+        const fontElements = phrasesInput.querySelectorAll('font[size="7"]');
+        fontElements.forEach(el => {
+          el.removeAttribute("size");
+          el.style.fontSize = `${currentFontSize}px`;
+        });
+      } else {
+        currentFontSize = Math.max(currentFontSize - 4, 16);
+      }
     }
   });
 
-  // Format selected text with color
+  // Color picker - in auto mode, randomize colors
+  fontColorPicker.addEventListener("click", (e) => {
+    if (autoMode) {
+      e.preventDefault();
+      // Shuffle colors and re-apply
+      shuffledColors = shuffleArray(sentenceColors);
+      autoColorSentences();
+    }
+  });
+
+  // Format selected text with color (only in manual mode)
   fontColorPicker.addEventListener("input", () => {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0 && !selection.isCollapsed) {
-      document.execCommand("foreColor", false, fontColorPicker.value);
+    if (!autoMode) {
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0 && !selection.isCollapsed) {
+        document.execCommand("foreColor", false, fontColorPicker.value);
+      }
     }
   });
 
