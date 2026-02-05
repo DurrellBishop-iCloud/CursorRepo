@@ -432,10 +432,6 @@ async function startCamera() {
     const mouthX = mouth.x * videoW * scale - offsetX;
     const mouthY = mouth.y * videoH * scale - offsetY;
     
-    ctx.beginPath();
-    ctx.arc(mouthX, mouthY, 8, 0, Math.PI * 2);
-    ctx.fillStyle = ratio > 0.06 ? "#00ff00" : "#ff0000"; // Green when open, red when closed
-    ctx.fill();
     const isOpen = ratio > 0.06;
     const now = Date.now();
 
