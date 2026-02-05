@@ -47,36 +47,44 @@ function setStatus(text) {
   statusLabel.textContent = text;
 }
 
-function parsePhrases(raw) {
-  return raw
-    .split(/\s+/)
-    .map((value) => value.trim())
-    .filter(Boolean);
+function parseFormattedPhrases() {
+  const words = [];
+  const walker = document.createTreeWalker(phrasesInput, NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) {
+    const text = node.textContent;
+    const tokens = text.split(/\s+/).filter(Boolean);
+    tokens.forEach((token) => {
+      const endsSentence = /[.!?]+$/.test(token);
+      const cleaned = token.replace(/^[^\w']+|[^\w']+$/g, "");
+      if (!cleaned) return;
+      // Get computed style from parent element
+      const parent = node.parentElement;
+      const style = window.getComputedStyle(parent);
+      words.push({
+        text: cleaned,
+        endsSentence,
+        fontSize: style.fontSize,
+        color: style.color
+      });
+    });
+  }
+  return words;
 }
 
 function applyPhrases(raw, shouldSave = true) {
-  const parsed = parsePhrases(raw);
-  const words = [];
-  parsed.forEach((token) => {
-    const endsSentence = /[.!?]+$/.test(token);
-    const cleaned = token.replace(/^[^\w']+|[^\w']+$/g, "");
-    if (!cleaned) return;
-    words.push({ text: cleaned, endsSentence });
-  });
+  const words = parseFormattedPhrases();
   phrases = words.length ? words : defaultPhrases.map((text) => ({
     text,
     endsSentence: /[.!?]+$/.test(text),
+    fontSize: "36px",
+    color: "#ffffff"
   }));
   wordIndex = 0;
   lastSentenceEnd = 0;
   if (shouldSave) {
     localStorage.setItem("phrases", raw);
-    try {
-      const encoded = encodeURIComponent(raw);
-      window.location.hash = encoded ? `text=${encoded}` : "";
-    } catch (err) {
-      console.warn("Could not update URL hash", err);
-    }
+    localStorage.setItem("phrasesHTML", phrasesInput.innerHTML);
   }
 }
 
@@ -188,12 +196,13 @@ function getNextWord() {
 function spawnText(xPx, yPx) {
   if (!engine) return;
 
-  const el = document.createElement("div");
-  el.className = "fly-text";
-  el.style.fontSize = `${fontSizeSlider.value}px`;
-  el.style.color = fontColorPicker.value;
   const entry = getNextWord();
   if (!entry) return;
+
+  const el = document.createElement("div");
+  el.className = "fly-text";
+  el.style.fontSize = entry.fontSize || `${fontSizeSlider.value}px`;
+  el.style.color = entry.color || fontColorPicker.value;
   el.textContent = entry.text;
   textLayer.appendChild(el);
 
@@ -304,22 +313,14 @@ async function startCamera() {
 }
 
 window.addEventListener("load", () => {
-  let initialText = "";
-  const hashMatch = window.location.hash.match(/^#text=(.*)$/);
-  if (hashMatch && hashMatch[1]) {
-    try {
-      initialText = decodeURIComponent(hashMatch[1]);
-    } catch (err) {
-      console.warn("Could not decode URL text", err);
-    }
-  }
-  if (!initialText) {
+  const savedHTML = localStorage.getItem("phrasesHTML");
+  if (savedHTML) {
+    phrasesInput.innerHTML = savedHTML;
+  } else {
     const saved = localStorage.getItem("phrases");
-    initialText = saved ? saved : defaultPhrases.join("\n");
+    phrasesInput.innerText = saved ? saved : defaultPhrases.join(" ");
   }
-
-  phrasesInput.value = initialText;
-  applyPhrases(phrasesInput.value, false);
+  applyPhrases(phrasesInput.innerText, false);
   authoringSection.classList.remove("hidden");
   cameraSection.classList.add("hidden");
   statusSection.classList.add("hidden");
@@ -329,8 +330,29 @@ window.addEventListener("load", () => {
   phrasesInput.addEventListener("input", () => {
     clearTimeout(hashWriteTimer);
     hashWriteTimer = setTimeout(() => {
-      applyPhrases(phrasesInput.value, true);
+      applyPhrases(phrasesInput.innerText, true);
     }, 400);
+  });
+
+  // Format selected text with size
+  fontSizeSlider.addEventListener("input", () => {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0 && !selection.isCollapsed) {
+      document.execCommand("fontSize", false, "7");
+      const fontElements = phrasesInput.querySelectorAll('font[size="7"]');
+      fontElements.forEach(el => {
+        el.removeAttribute("size");
+        el.style.fontSize = `${fontSizeSlider.value}px`;
+      });
+    }
+  });
+
+  // Format selected text with color
+  fontColorPicker.addEventListener("input", () => {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0 && !selection.isCollapsed) {
+      document.execCommand("foreColor", false, fontColorPicker.value);
+    }
   });
 
   const handleStartError = (err) => {
@@ -363,7 +385,7 @@ window.addEventListener("load", () => {
     if (event?.type === "touchend" || event?.type === "touchstart") {
       event.preventDefault();
     }
-    applyPhrases(phrasesInput.value, true);
+    applyPhrases(phrasesInput.innerText, true);
     wordIndex = 0;
     lastSentenceEnd = 0;
     authoringSection.classList.add("hidden");

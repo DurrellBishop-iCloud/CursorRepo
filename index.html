@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mouth React Camera v1.5.2 CC</title>
-    <link rel="stylesheet" href="styles.css?v=1.5.2" />
+    <title>Mouth React Camera v1.5.3 CC</title>
+    <link rel="stylesheet" href="styles.css?v=1.5.3" />
   </head>
   <body>
     <main class="app">
       <section id="authoring" class="authoring full-screen">
         <div class="authoring-toolbar">
-          <span class="version-title">v1.5.2 CC</span>
+          <span class="version-title">v1.5.3 CC</span>
           <div class="text-controls">
             <label>Size <input type="range" id="fontSizeSlider" min="16" max="80" value="36"></label>
             <input type="color" id="fontColorPicker" value="#ffffff" title="Text color">
@@ -31,10 +31,11 @@
             Start Camera
           </button>
         </div>
-        <textarea
+        <div
           id="phrasesInput"
-          placeholder="Type or paste text here. One word or phrase per line."
-        ></textarea>
+          contenteditable="true"
+          data-placeholder="Type or paste text here."
+        ></div>
       </section>
 
       <section id="cameraSection" class="camera-frame hidden">
@@ -52,6 +53,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
-    <script src="app.js?v=1.5.2"></script>
+    <script src="app.js?v=1.5.3"></script>
   </body>
 </html>
