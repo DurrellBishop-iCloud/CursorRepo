@@ -78,6 +78,11 @@ function shuffleArray(array) {
   return arr;
 }
 
+// Update color chip button to show first color
+function updateColorChip() {
+  colorShuffleBtn.style.backgroundColor = shuffledColors[0];
+}
+
 function parseFormattedPhrases() {
   const words = [];
   const walker = document.createTreeWalker(phrasesInput, NodeFilter.SHOW_TEXT);
@@ -148,6 +153,7 @@ function updateColorControls() {
   if (autoMode) {
     fontColorPicker.classList.add("hidden");
     colorShuffleBtn.classList.remove("hidden");
+    updateColorChip();
   } else {
     fontColorPicker.classList.remove("hidden");
     colorShuffleBtn.classList.add("hidden");
@@ -390,6 +396,7 @@ window.addEventListener("load", () => {
   statusSection.classList.add("hidden");
   hideOverlay();
   setStatus("Ready");
+  updateColorChip();
   updateColorControls();
 
   phrasesInput.addEventListener("input", () => {
@@ -445,9 +452,10 @@ window.addEventListener("load", () => {
     }
   });
 
-  // Color shuffle button (shown in auto mode)
+  // Color shuffle button (shown in auto mode) - tap to shuffle colors
   colorShuffleBtn.addEventListener("click", () => {
     shuffledColors = shuffleArray(sentenceColors);
+    updateColorChip();
     autoColorSentences();
   });
 

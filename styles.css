@@ -141,6 +141,12 @@ body {
   transform: scale(0.95);
 }
 
+.color-control {
+  position: relative;
+  width: 32px;
+  height: 32px;
+}
+
 .text-controls input[type="color"] {
   width: 32px;
   height: 32px;
@@ -148,6 +154,32 @@ body {
   border-radius: 6px;
   cursor: pointer;
   background: transparent;
+  padding: 0;
+}
+
+.text-controls input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.text-controls input[type="color"]::-webkit-color-swatch {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.color-chip-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.color-chip-btn:active {
+  transform: scale(0.95);
 }
 
 button {
@@ -235,33 +267,4 @@ canvas {
 .status {
   font-size: 14px;
   color: #b4bac4;
-}
-
-.color-control {
-  position: relative;
-  width: 32px;
-  height: 32px;
-}
-
-.color-shuffle-btn {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border-radius: 6px;
-  background: rgba(93, 124, 255, 0.2);
-  color: #fff;
-  border: 1px solid rgba(93, 124, 255, 0.4);
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.color-shuffle-btn:active {
-  transform: scale(0.95);
-  background: rgba(93, 124, 255, 0.4);
 }
