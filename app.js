@@ -269,7 +269,50 @@ function getNextWord() {
   return entry;
 }
 
-function spawnText(xPx, yPx, useStream = false) {
+// Single word spawn - random vertical trajectory (old behavior)
+function spawnTextSingle(xPx, yPx) {
+  if (!engine) return;
+
+  const entry = getNextWord();
+  if (!entry) return;
+
+  const el = document.createElement("div");
+  el.className = "fly-text";
+  el.style.fontSize = entry.fontSize || `${currentFontSize}px`;
+  el.style.color = entry.color || fontColorPicker.value;
+  el.textContent = entry.text;
+  textLayer.appendChild(el);
+
+  const rect = el.getBoundingClientRect();
+  const body = Bodies.rectangle(
+    xPx,
+    yPx,
+    rect.width + 16,
+    rect.height + 12,
+    {
+      restitution: 0.9,
+      friction: 0.05,
+      frictionAir: 0.01,
+      density: 0.001,
+    }
+  );
+
+  const textEntry = { body, el };
+  textBodies.push(textEntry);
+  World.add(engine.world, body);
+
+  // Old random behavior - mostly vertical with slight horizontal variation
+  Body.setVelocity(body, {
+    x: (Math.random() - 0.5) * 8,
+    y: -6 - Math.random() * 4,
+  });
+  Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.2);
+
+  setTimeout(() => removeTextBody(textEntry), 7000);
+}
+
+// Stream spawn - aligned trajectory toward top-left
+function spawnTextStream(xPx, yPx, isFirst) {
   if (!engine) return;
 
   const entry = getNextWord();
@@ -302,13 +345,12 @@ function spawnText(xPx, yPx, useStream = false) {
 
   let vx, vy;
   
-  if (useStream && streamVelocity) {
+  if (!isFirst && streamVelocity) {
     // Stream mode: use same velocity as first word
     vx = streamVelocity.x;
     vy = streamVelocity.y;
   } else {
-    // First word: shoot toward top-left
-    // Random angle between 200-250 degrees (top-left quadrant)
+    // First word in stream: shoot toward top-left
     const angleDeg = 200 + Math.random() * 50;
     const angleRad = angleDeg * Math.PI / 180;
     const speed = 8 + Math.random() * 4;
@@ -317,8 +359,8 @@ function spawnText(xPx, yPx, useStream = false) {
     
     // Store for stream mode
     streamVelocity = { x: vx, y: vy };
-    // Calculate angle for text rotation (first letter leads)
-    streamAngle = Math.atan2(vy, vx) + Math.PI; // Add 180° so text reads correctly
+    // Calculate angle for text rotation (add 180° so first letter leads)
+    streamAngle = Math.atan2(vy, vx) + Math.PI;
   }
 
   Body.setVelocity(body, { x: vx, y: vy });
@@ -365,7 +407,7 @@ async function startCamera() {
     const now = Date.now();
 
     if (isOpen && !lastOpen) {
-      // Mouth just opened - reset stream and spawn first word
+      // Mouth just opened - spawn single word with old random behavior
       if (lastSentenceEnd && now - lastSentenceEnd < FULL_STOP_COOLDOWN_MS) {
         lastOpen = isOpen;
         return;
@@ -376,16 +418,17 @@ async function startCamera() {
       lastSpawn = now;
       const mouth = landmarks[13];
       const { width, height } = getLayerSize();
-      spawnText(mouth.x * width, mouth.y * height, false);
+      spawnTextSingle(mouth.x * width, mouth.y * height); // Use old random behavior
       const previous = phrases[(wordIndex - 1 + phrases.length) % phrases.length];
       if (previous?.endsSentence) {
         lastSentenceEnd = now;
       }
     } else if (isOpen && now - openStart > 300 && now - lastSpawn > 200) {
-      // Mouth still open - stream mode, same trajectory
+      // Mouth still open - stream mode with aligned trajectory
       const mouth = landmarks[13];
       const { width, height } = getLayerSize();
-      spawnText(mouth.x * width, mouth.y * height, true);
+      const isFirstStream = !streamVelocity;
+      spawnTextStream(mouth.x * width, mouth.y * height, isFirstStream);
       lastSpawn = now;
       const previous = phrases[(wordIndex - 1 + phrases.length) % phrases.length];
       if (previous?.endsSentence) {
