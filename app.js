@@ -318,7 +318,7 @@ function spawnText(xPx, yPx, useStream = false) {
     // Store for stream mode
     streamVelocity = { x: vx, y: vy };
     // Calculate angle for text rotation (first letter leads)
-    streamAngle = Math.atan2(vy, vx);
+    streamAngle = Math.atan2(vy, vx) + Math.PI; // Add 180° so text reads correctly
   }
 
   Body.setVelocity(body, { x: vx, y: vy });
