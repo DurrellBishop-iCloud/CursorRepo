@@ -8,10 +8,26 @@ const startBtn = document.getElementById("startBtn");
 const authoringSection = document.getElementById("authoring");
 const cameraSection = document.getElementById("cameraSection");
 const statusSection = document.getElementById("statusSection");
-const fontSizeSlider = document.getElementById("fontSizeSlider");
+const sizeUpBtn = document.getElementById("sizeUpBtn");
+const sizeDownBtn = document.getElementById("sizeDownBtn");
 const fontColorPicker = document.getElementById("fontColorPicker");
+const autoBtn = document.getElementById("autoBtn");
 
 const { Engine, World, Bodies, Body, Runner } = Matter;
+
+// Light colors for auto-coloring sentences
+const sentenceColors = [
+  "#FFB3BA", // light pink
+  "#BAFFC9", // light green
+  "#BAE1FF", // light blue
+  "#FFFFBA", // light yellow
+  "#FFDFBa", // light peach
+  "#E0BBE4", // light purple
+  "#D4F0F0", // light teal
+  "#FCE4D6", // light coral
+  "#C9C9FF", // light lavender
+  "#CAFFBF", // light mint
+];
 
 const defaultPhrases = [
   "Write",
@@ -30,6 +46,8 @@ let wordIndex = 0;
 let lastSentenceEnd = 0;
 const FULL_STOP_COOLDOWN_MS = 300;
 let hashWriteTimer;
+let currentFontSize = 36;
+let autoMode = false;
 
 let lastSpawn = 0;
 let lastOpen = false;
@@ -86,6 +104,30 @@ function applyPhrases(raw, shouldSave = true) {
     localStorage.setItem("phrases", raw);
     localStorage.setItem("phrasesHTML", phrasesInput.innerHTML);
   }
+}
+
+// Auto-color sentences with different light colors
+function autoColorSentences() {
+  const text = phrasesInput.innerText;
+  if (!text.trim()) return;
+  
+  // Split into sentences (by . ! ?)
+  const sentences = text.split(/(?<=[.!?])\s*/);
+  let colorIndex = 0;
+  
+  let html = "";
+  sentences.forEach((sentence, i) => {
+    if (!sentence.trim()) return;
+    const color = sentenceColors[colorIndex % sentenceColors.length];
+    html += `<span style="color: ${color}; font-size: ${currentFontSize}px">${sentence}</span>`;
+    // Only increment color if sentence ends with punctuation
+    if (/[.!?]$/.test(sentence.trim())) {
+      colorIndex++;
+    }
+  });
+  
+  phrasesInput.innerHTML = html;
+  applyPhrases(phrasesInput.innerText, true);
 }
 
 function showOverlay(message) {
@@ -201,7 +243,7 @@ function spawnText(xPx, yPx) {
 
   const el = document.createElement("div");
   el.className = "fly-text";
-  el.style.fontSize = entry.fontSize || `${fontSizeSlider.value}px`;
+  el.style.fontSize = entry.fontSize || `${currentFontSize}px`;
   el.style.color = entry.color || fontColorPicker.value;
   el.textContent = entry.text;
   textLayer.appendChild(el);
@@ -332,16 +374,35 @@ window.addEventListener("load", () => {
     }, 400);
   });
 
-  // Format selected text with size
-  fontSizeSlider.addEventListener("input", () => {
+  // Size up button
+  sizeUpBtn.addEventListener("click", () => {
     const selection = window.getSelection();
     if (selection.rangeCount > 0 && !selection.isCollapsed) {
+      currentFontSize = Math.min(currentFontSize + 4, 80);
       document.execCommand("fontSize", false, "7");
       const fontElements = phrasesInput.querySelectorAll('font[size="7"]');
       fontElements.forEach(el => {
         el.removeAttribute("size");
-        el.style.fontSize = `${fontSizeSlider.value}px`;
+        el.style.fontSize = `${currentFontSize}px`;
       });
+    } else {
+      currentFontSize = Math.min(currentFontSize + 4, 80);
+    }
+  });
+
+  // Size down button
+  sizeDownBtn.addEventListener("click", () => {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0 && !selection.isCollapsed) {
+      currentFontSize = Math.max(currentFontSize - 4, 16);
+      document.execCommand("fontSize", false, "7");
+      const fontElements = phrasesInput.querySelectorAll('font[size="7"]');
+      fontElements.forEach(el => {
+        el.removeAttribute("size");
+        el.style.fontSize = `${currentFontSize}px`;
+      });
+    } else {
+      currentFontSize = Math.max(currentFontSize - 4, 16);
     }
   });
 
@@ -350,6 +411,15 @@ window.addEventListener("load", () => {
     const selection = window.getSelection();
     if (selection.rangeCount > 0 && !selection.isCollapsed) {
       document.execCommand("foreColor", false, fontColorPicker.value);
+    }
+  });
+
+  // Auto button - toggle auto mode
+  autoBtn.addEventListener("click", () => {
+    autoMode = !autoMode;
+    autoBtn.classList.toggle("active", autoMode);
+    if (autoMode) {
+      autoColorSentences();
     }
   });
 

@@ -96,20 +96,49 @@ body {
 .text-controls {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   font-size: 13px;
   color: #9aa2b1;
 }
 
-.text-controls label {
+.size-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 6px;
+  background: rgba(93, 124, 255, 0.2);
+  color: #b9c3ff;
+  border: 1px solid rgba(93, 124, 255, 0.4);
+  font-size: 18px;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
 }
 
-.text-controls input[type="range"] {
-  width: 80px;
-  accent-color: #5d7cff;
+.size-btn:active {
+  transform: scale(0.95);
+  background: rgba(93, 124, 255, 0.4);
+}
+
+.auto-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: rgba(93, 124, 255, 0.2);
+  color: #b9c3ff;
+  border: 1px solid rgba(93, 124, 255, 0.4);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.auto-btn.active {
+  background: rgba(93, 124, 255, 0.6);
+  color: #fff;
+  border-color: #5d7cff;
+}
+
+.auto-btn:active {
+  transform: scale(0.95);
 }
 
 .text-controls input[type="color"] {
@@ -207,4 +236,3 @@ canvas {
   font-size: 14px;
   color: #b4bac4;
 }
-
