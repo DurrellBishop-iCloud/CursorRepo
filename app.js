@@ -405,10 +405,33 @@ async function startCamera() {
     const ratio = mouthOpenRatio(landmarks);
     
     // DEBUG: Draw mouth position dot
+    // Account for object-fit: cover cropping
     const mouth = landmarks[13];
-    const { width, height } = getLayerSize();
-    const mouthX = mouth.x * width;
-    const mouthY = mouth.y * height;
+    const { width: containerW, height: containerH } = getLayerSize();
+    const videoW = video.videoWidth || 720;
+    const videoH = video.videoHeight || 960;
+    
+    // Calculate how object-fit: cover scales and crops
+    const containerRatio = containerW / containerH;
+    const videoRatio = videoW / videoH;
+    
+    let scale, offsetX = 0, offsetY = 0;
+    if (containerRatio > videoRatio) {
+      // Container is wider - video is scaled to width, cropped top/bottom
+      scale = containerW / videoW;
+      const scaledH = videoH * scale;
+      offsetY = (scaledH - containerH) / 2;
+    } else {
+      // Container is taller - video is scaled to height, cropped left/right
+      scale = containerH / videoH;
+      const scaledW = videoW * scale;
+      offsetX = (scaledW - containerW) / 2;
+    }
+    
+    // Map mouth position to screen coordinates
+    const mouthX = mouth.x * videoW * scale - offsetX;
+    const mouthY = mouth.y * videoH * scale - offsetY;
+    
     ctx.beginPath();
     ctx.arc(mouthX, mouthY, 8, 0, Math.PI * 2);
     ctx.fillStyle = ratio > 0.06 ? "#00ff00" : "#ff0000"; // Green when open, red when closed
@@ -426,19 +449,15 @@ async function startCamera() {
       streamAngle = null;
       openStart = now;
       lastSpawn = now;
-      const mouth = landmarks[13];
-      const { width, height } = getLayerSize();
-      spawnTextSingle(mouth.x * width, mouth.y * height); // Use old random behavior
+      spawnTextSingle(mouthX, mouthY); // Use corrected screen coordinates
       const previous = phrases[(wordIndex - 1 + phrases.length) % phrases.length];
       if (previous?.endsSentence) {
         lastSentenceEnd = now;
       }
     } else if (isOpen && now - openStart > 300 && now - lastSpawn > 200) {
       // Mouth still open - stream mode with aligned trajectory
-      const mouth = landmarks[13];
-      const { width, height } = getLayerSize();
       const isFirstStream = !streamVelocity;
-      spawnTextStream(mouth.x * width, mouth.y * height, isFirstStream);
+      spawnTextStream(mouthX, mouthY, isFirstStream); // Use corrected screen coordinates
       lastSpawn = now;
       const previous = phrases[(wordIndex - 1 + phrases.length) % phrases.length];
       if (previous?.endsSentence) {
