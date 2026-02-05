@@ -11,6 +11,7 @@ const statusSection = document.getElementById("statusSection");
 const sizeUpBtn = document.getElementById("sizeUpBtn");
 const sizeDownBtn = document.getElementById("sizeDownBtn");
 const fontColorPicker = document.getElementById("fontColorPicker");
+const colorShuffleBtn = document.getElementById("colorShuffleBtn");
 const autoBtn = document.getElementById("autoBtn");
 
 const { Engine, World, Bodies, Body, Runner } = Matter;
@@ -140,6 +141,17 @@ function autoColorSentences() {
   
   phrasesInput.innerHTML = html;
   applyPhrases(phrasesInput.innerText, true);
+}
+
+// Toggle which color control is visible based on auto mode
+function updateColorControls() {
+  if (autoMode) {
+    fontColorPicker.classList.add("hidden");
+    colorShuffleBtn.classList.remove("hidden");
+  } else {
+    fontColorPicker.classList.remove("hidden");
+    colorShuffleBtn.classList.add("hidden");
+  }
 }
 
 function showOverlay(message) {
@@ -378,6 +390,7 @@ window.addEventListener("load", () => {
   statusSection.classList.add("hidden");
   hideOverlay();
   setStatus("Ready");
+  updateColorControls();
 
   phrasesInput.addEventListener("input", () => {
     clearTimeout(hashWriteTimer);
@@ -432,23 +445,17 @@ window.addEventListener("load", () => {
     }
   });
 
-  // Color picker - in auto mode, randomize colors
-  fontColorPicker.addEventListener("click", (e) => {
-    if (autoMode) {
-      e.preventDefault();
-      // Shuffle colors and re-apply
-      shuffledColors = shuffleArray(sentenceColors);
-      autoColorSentences();
-    }
+  // Color shuffle button (shown in auto mode)
+  colorShuffleBtn.addEventListener("click", () => {
+    shuffledColors = shuffleArray(sentenceColors);
+    autoColorSentences();
   });
 
-  // Format selected text with color (only in manual mode)
+  // Format selected text with color (manual mode)
   fontColorPicker.addEventListener("input", () => {
-    if (!autoMode) {
-      const selection = window.getSelection();
-      if (selection.rangeCount > 0 && !selection.isCollapsed) {
-        document.execCommand("foreColor", false, fontColorPicker.value);
-      }
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0 && !selection.isCollapsed) {
+      document.execCommand("foreColor", false, fontColorPicker.value);
     }
   });
 
@@ -456,6 +463,7 @@ window.addEventListener("load", () => {
   autoBtn.addEventListener("click", () => {
     autoMode = !autoMode;
     autoBtn.classList.toggle("active", autoMode);
+    updateColorControls();
     if (autoMode) {
       autoColorSentences();
     }

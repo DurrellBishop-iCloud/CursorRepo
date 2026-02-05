@@ -6,11 +6,11 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Mouth React Camera v1.5.9</title>
+    <title>Mouth React Camera v1.6.0</title>
     <script>
       // Auto cache-bust: redirect to versioned URL if needed
       (function() {
-        var VERSION = "1.5.9";
+        var VERSION = "1.6.0";
         var params = new URLSearchParams(window.location.search);
         var urlVersion = params.get("v");
         if (urlVersion !== VERSION) {
@@ -20,17 +20,20 @@
         }
       })();
     </script>
-    <link rel="stylesheet" href="styles.css?v=1.5.9" />
+    <link rel="stylesheet" href="styles.css?v=1.6.0" />
   </head>
   <body>
     <main class="app">
       <section id="authoring" class="authoring full-screen">
         <div class="authoring-toolbar">
-          <span class="version-title">v1.5.9</span>
+          <span class="version-title">v1.6.0</span>
           <div class="text-controls">
             <button type="button" id="sizeDownBtn" class="size-btn">−</button>
             <button type="button" id="sizeUpBtn" class="size-btn">+</button>
-            <input type="color" id="fontColorPicker" value="#ffffff" title="Text color">
+            <div class="color-control">
+              <input type="color" id="fontColorPicker" value="#ffffff" title="Text color">
+              <button type="button" id="colorShuffleBtn" class="color-shuffle-btn hidden">🎨</button>
+            </div>
             <button type="button" id="autoBtn" class="auto-btn">Auto</button>
           </div>
           <button
@@ -71,6 +74,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
-    <script src="app.js?v=1.5.9"></script>
+    <script src="app.js?v=1.6.0"></script>
   </body>
 </html>

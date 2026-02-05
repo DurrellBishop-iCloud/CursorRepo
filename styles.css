@@ -236,3 +236,32 @@ canvas {
   font-size: 14px;
   color: #b4bac4;
 }
+
+.color-control {
+  position: relative;
+  width: 32px;
+  height: 32px;
+}
+
+.color-shuffle-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 6px;
+  background: rgba(93, 124, 255, 0.2);
+  color: #fff;
+  border: 1px solid rgba(93, 124, 255, 0.4);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.color-shuffle-btn:active {
+  transform: scale(0.95);
+  background: rgba(93, 124, 255, 0.4);
+}
