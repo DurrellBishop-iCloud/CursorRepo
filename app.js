@@ -316,10 +316,8 @@ window.addEventListener("load", () => {
   const savedHTML = localStorage.getItem("phrasesHTML");
   if (savedHTML) {
     phrasesInput.innerHTML = savedHTML;
-  } else {
-    const saved = localStorage.getItem("phrases");
-    phrasesInput.innerText = saved ? saved : defaultPhrases.join(" ");
   }
+  // Leave empty if no saved content - CSS placeholder will show
   applyPhrases(phrasesInput.innerText, false);
   authoringSection.classList.remove("hidden");
   cameraSection.classList.add("hidden");
