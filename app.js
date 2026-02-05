@@ -14,16 +14,16 @@ const fontColorPicker = document.getElementById("fontColorPicker");
 const { Engine, World, Bodies, Body, Runner } = Matter;
 
 const defaultPhrases = [
-  "WOW!",
-  "HELLO",
-  "ZAP",
-  "YEAH",
-  "OMG",
-  "POP",
-  "BOOM",
-  "COOL",
-  "HI",
-  "BRB",
+  "Write",
+  "your",
+  "message",
+  "here",
+  "and",
+  "set",
+  "its",
+  "size",
+  "and",
+  "colour",
 ];
 let phrases = [...defaultPhrases];
 let wordIndex = 0;
